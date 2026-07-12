@@ -10,7 +10,7 @@ entity uart_tx is
         i_clk		:	in      std_logic;			-- clock lmao
         i_reset		:       in      std_logic;			-- reset button
         i_go		:       in      std_logic;			-- go button
-	i_data		:	in	std_logic_vector(7 downto 0);	-- 8 bit register containing the data to be shifted PISO style
+	    i_data		:	in	std_logic_vector(7 downto 0);	-- 8 bit register containing the data to be shifted PISO style
 
         o_done		:       out     std_logic;			-- market indicating we're done
         o_data		:       out     std_logic);			-- bit containing the serial data that was shifted over
@@ -22,14 +22,14 @@ architecture behavior of uart_tx is
         -- define the states
         type state_type is (
 		IDLE,		-- UART idling at '1', no connection. 
-                START_BIT,      -- Wake up the receiver with a "0"
-                DATA_BIT,       -- All the Parallel-In Serial-Out data
+        START_BIT,      -- Wake up the receiver with a "0"
+        DATA_BIT,       -- All the Parallel-In Serial-Out data
 		STOP_BIT);	-- Inform the receiver that we're donne
 
         signal	current_state	: state_type		:= IDLE;			-- declares a current state and places its default value at IDLE.
         signal	baud_tick	: std_logic		:= '0';				-- tick at the predetermined ratio, 50m/115.2k
-	signal  r_shift_reg	: std_logic_vector(7 downto 0) := (others => '0');	-- shifting data one by one, replacing it with zeros after it's shifted
-	signal  r_bit_index	: integer range 0 to 7	:= 0;				-- the current bit of to be outputted to o_data
+    	signal  r_shift_reg	: std_logic_vector(7 downto 0) := (others => '0');	-- shifting data one by one, replacing it with zeros after it's shifted
+    	signal  r_bit_index	: integer range 0 to 7	:= 0;				-- the current bit of to be outputted to o_data
         --
 
 begin
@@ -61,46 +61,46 @@ begin
                         if baud_tick = '1' then
                                 case current_state is
 
-					-- data line is still 1 (no data), set done to 0 (not done). If go is pressed, load the entire data reg to the shift reg and set index to 0
+                					-- data line is still 1 (no data), set done to 0 (not done). If go is pressed, load the entire data reg to the shift reg and set index to 0
                                         when IDLE =>
-						o_data	<= '1';
-						o_done	<= '0';
-						if i_go	= '0' then
-							r_shift_reg	<= i_data;
-							r_bit_index	<= 0;
-							current_state	<= START_BIT;
-                                                end if;
-					--
+                						o_data	<= '1';
+                						o_done	<= '0';
+                						if i_go	= '0' then
+                							r_shift_reg	<= i_data;
+                							r_bit_index	<= 0;
+                							current_state	<= START_BIT;
+                                        end if;
+                					--
 
-					-- begin prepping by putting data to 0; exclaiming there's transmission
-					when START_BIT =>
-						o_data		<= '0';
-						current_state	<= DATA_BIT;
-					--
+                					-- begin prepping by putting data to 0; exclaiming there's transmission
+                					when START_BIT =>
+                						o_data		<= '0';
+                						current_state	<= DATA_BIT;
+                					--
 
-					-- shifting serial data to the output
-                                        when DATA_BIT =>
-						o_data		<= r_shift_reg(0);			-- set the data output to the right-most index of the shift reg
-						r_shift_reg	<= '0' & r_shift_reg(7 downto 1);	-- then keep shoving data to the right most index by plugging in 0's
+                					-- shifting serial data to the output
+                                    when DATA_BIT =>
+                            			o_data		<= r_shift_reg(0);		            -- set the data output to the right-most index of the shift reg
+                						r_shift_reg	<= '0' & r_shift_reg(7 downto 1);	-- then keep shoving data to the right most index by plugging in 0's
+                
+                						if r_bit_index	< 7 then
+                							r_bit_index   <= r_bit_index + 1;		-- if this has been done 8 times, stop (since it's an 8 bit register)
+                						else
+                							current_state	<= STOP_BIT;
+                						end if;
+                                    --
 
-						if r_bit_index	< 7 then
-							r_bit_index   <= r_bit_index + 1;		-- if this has been done 8 times, stop (since it's an 8 bit register)
-						else
-							current_state	<= STOP_BIT;
-						end if;
-                                        --
-
-					-- once ordered to stop, just raise up the barriers by setting data back to 1, and exclaminig "DONE".	
-					when STOP_BIT =>
-						o_data		<= '1';
-						o_done		<= '1';
-						current_state	<= IDLE;
+                					-- once ordered to stop, just raise up the barriers by setting data back to 1, and exclaminig "DONE".	
+                					when STOP_BIT =>
+                						o_data		<= '1';
+                						o_done		<= '1';
+                						current_state	<= IDLE;
+                                    --
 					
-					-- edge case handling
-                                        when others =>
-
-                                                current_state	<= IDLE;
-					-- 
+                					-- edge case handling
+                                    when others =>
+                                        current_state	<= IDLE;
+                					-- 
                                 end case;
                         end if;
                 end if;
