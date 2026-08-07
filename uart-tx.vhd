@@ -4,13 +4,13 @@ use ieee.std_logic_1164.all;
 entity uart_tx is
 	-- definitions
         generic (
-        MAX_COUNT       : natural := 434);				-- make it count to 434 as the result of 50 million over 155,200
+        MAX_COUNT   :       natural := 434);		    -- make it count to 434 as the result of 50 million over 155,200
 
         Port (
-        i_clk		:	in      std_logic;			-- clock lmao
+        i_clk		:	    in      std_logic;			-- clock lmao
         i_reset		:       in      std_logic;			-- reset button
         i_go		:       in      std_logic;			-- go button
-	    i_data		:	in	std_logic_vector(7 downto 0);	-- 8 bit register containing the data to be shifted PISO style
+	    i_data		:	    in	std_logic_vector(7 downto 0);	-- 8 bit register containing the data to be shifted PISO style
 
         o_done		:       out     std_logic;			-- market indicating we're done
         o_data		:       out     std_logic);			-- bit containing the serial data that was shifted over
@@ -21,15 +21,15 @@ architecture behavior of uart_tx is
 
         -- define the states
         type state_type is (
-		IDLE,		-- UART idling at '1', no connection. 
+		IDLE,		    -- UART idling at '1', no connection. 
         START_BIT,      -- Wake up the receiver with a "0"
         DATA_BIT,       -- All the Parallel-In Serial-Out data
-		STOP_BIT);	-- Inform the receiver that we're donne
+		STOP_BIT);	    -- Inform the receiver that we're donne
 
-        signal	current_state	: state_type		:= IDLE;			-- declares a current state and places its default value at IDLE.
-        signal	baud_tick	: std_logic		:= '0';				-- tick at the predetermined ratio, 50m/115.2k
-    	signal  r_shift_reg	: std_logic_vector(7 downto 0) := (others => '0');	-- shifting data one by one, replacing it with zeros after it's shifted
-    	signal  r_bit_index	: integer range 0 to 7	:= 0;				-- the current bit of to be outputted to o_data
+        signal	current_state	: state_type	        := IDLE;			        -- declares a current state and places its default value at IDLE.
+        signal	baud_tick	    : std_logic		        := '0';				        -- tick at the predetermined ratio, 50m/115.2k
+    	signal  r_shift_reg	    : std_logic_vector(7 downto 0) := (others => '0');	-- shifting data one by one, replacing it with zeros after it's shifted
+    	signal  r_bit_index	    : integer range 0 to 7	:= 0;				        -- the current bit of to be outputted to o_data
         --
 
 begin
