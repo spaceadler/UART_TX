@@ -47,4 +47,4 @@ The transmitter is driven by a four-state FSM, clocked by a baud-rate tick deriv
 Load `uart_tx.vhd` into any VHDL simulator (ModelSim, GHDL, Vivado) with a testbench that asserts `i_go` and provides an 8-bit stimulus on `i_data`. The full byte frame (start + 8 data + stop) should complete in `10 × 434 = 4,340` clock cycles.
 
 ---
-*made with logic, coffee, and many sleepless nights*
+*powered by logic, coffee, and many sleepless nights*
