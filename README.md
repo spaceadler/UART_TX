@@ -19,7 +19,7 @@ The transmitter is driven by a four-state FSM, clocked by a baud-rate tick deriv
 ```
         i_go = '0'                       r_bit_index = 7
  IDLE ──────────► START_BIT ──► DATA_BIT ──────────────► STOP_BIT
-  ▲               (o_data='0')   (PISO)     (o_data='1')    │
+  ▲               (o_data='0')   (PISO)     (o_data='1')     │
   │                                                          │
   └──────────────────────────────────────────────────────────┘
 ```
