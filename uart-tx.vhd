@@ -4,7 +4,7 @@ use ieee.std_logic_1164.all;
 entity uart_tx is
 	-- definitions
         generic (
-        MAX_COUNT   :       natural := 434);		    -- make it count to 434 as the result of 50 million over 155,200
+        MAX_COUNT   :       natural := 434);		    -- make it count to 434 as the result of 50 million over 115,200
 
         Port (
         i_clk		:	    in      std_logic;			-- clock lmao
@@ -37,7 +37,11 @@ begin
         process (i_clk)
         variable count : natural range 0 to MAX_COUNT := 0;
         begin
-                if rising_edge(i_clk) then
+                if (i_reset = '0') then
+                        count           := 0;
+                        baud_tick       <= '0';
+                
+                elsif rising_edge(i_clk) then
                         if count < (MAX_COUNT-1) then
                                 count           := count + 1;
                                 baud_tick	<= '0';
@@ -56,6 +60,7 @@ begin
                 if (i_reset = '0') then
                         current_state   <= IDLE;
                         o_data          <= '1';
+                        o_done          <= '0';
 
                 elsif rising_edge(i_clk) then
                         if baud_tick = '1' then
