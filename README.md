@@ -67,5 +67,7 @@ ghdl -r --std=08 <tb_entity> --vcd=out.vcd --stop-time=200us
 
 Pulse `i_go` low and expect `o_done` 4,340 clocks after the edge that saw it; streamed frames start 4,342 clocks apart. Set `MAX_COUNT` small in the testbench to keep waveforms short.
 
+**Codemap:** [CODEMAP.md](CODEMAP.md), the entities, ports and processes, generated from the code.
+
 ---
 *powered by logic, coffee, and many sleepless nights*
