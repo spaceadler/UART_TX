@@ -2,7 +2,7 @@
 
 ← [README](README.md)
 
-> Generated from commit `8026898` by `scripts/codemap.py`. Regenerate it from the workspace root with `python3 scripts/codemap.py UART_TX`; don't edit it by hand.
+> Generated from commit `d64d159` by `scripts/codemap.py`. Regenerate it from the workspace root with `python3 scripts/codemap.py UART_TX`; don't edit it by hand.
 
 ## Design
 
