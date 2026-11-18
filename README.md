@@ -13,7 +13,7 @@ One synthesizable file, `uart-tx.vhd`. It latches an 8-bit bus, shifts it out LS
 ## Architecture
 
 ```mermaid
-flowchart LR
+flowchart TB
     clk["i_clk 50 MHz"] --> div["baud divider<br/>÷434"]
     div -->|"baud_tick"| fsm["4-state FSM"]
     go["i_go (active low)"] --> fsm
@@ -61,11 +61,12 @@ stateDiagram-v2
 ## Simulation
 
 ```bash
-ghdl -a --std=08 uart-tx.vhd <your_tb>.vhd && ghdl -e --std=08 <tb_entity>
-ghdl -r --std=08 <tb_entity> --vcd=out.vcd --stop-time=200us
+ghdl -a --std=08 uart-tx.vhd tb_uart_tx.vhd
+ghdl -e --std=08 tb_uart_tx
+ghdl -r --std=08 tb_uart_tx --vcd=tb_uart_tx.vcd   # prints PASS or the failing bit
 ```
 
-Pulse `i_go` low and expect `o_done` 4,340 clocks after the edge that saw it; streamed frames start 4,342 clocks apart. Set `MAX_COUNT` small in the testbench to keep waveforms short.
+`tb_uart_tx.vhd` sends four bytes (`A5`, `3C`, `00`, `FF`), each with a one-clock `i_go` pulse. It samples every bit in the middle of its period and checks that `o_done` is high for exactly one clock, 10 bit periods after the edge that saw `i_go`. It sets `MAX_COUNT` to 8 so the waveform stays short; at 434, `o_done` comes 4,340 clocks after that edge, and streamed frames start 4,342 clocks apart.
 
 **Codemap:** [CODEMAP.md](CODEMAP.md), the entities, ports and processes, generated from the code.
 
